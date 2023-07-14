@@ -34,6 +34,7 @@ app.get('/prompts', async (req, res) => {
     const prompts = await redis.mget(keys);
     const result = keys.map((key, index) => {
       const prompt = JSON.parse(prompts[index]);
+      console.log(prompt)
       return { id: key.replace('prompts:', ''), ...prompt };
     });
     res.json(result);}
@@ -47,10 +48,9 @@ app.get('/prompts', async (req, res) => {
 app.post('/prompts', async (req, res) => {
     try{
   const prompt = req.body;
-  console.log(prompt);
   const promptId = uuidv4();
   await redis.set(`prompts:${promptId}`, JSON.stringify(prompt));
-  res.json({ id: promptId,prompt:JSON.stringify(prompt) });}
+  res.json({ id: promptId, ...prompt });}
   catch(error){
     console.error(error);
     res.status(500).send('Internal Server Error');
